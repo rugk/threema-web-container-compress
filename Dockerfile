@@ -73,7 +73,7 @@ COPY --chown=node:node --from=builder /app /app
 
 # compress zstd
 # "threads=0" uses one thread per CPU core
-RUN find /app -type f -exec zstd -z -f -19 --threads=0 {} +
+RUN find . -type f -exec zstd -z -f -19 --threads=0 {} +
 
 # load gzipper
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
