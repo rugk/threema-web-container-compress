@@ -19,7 +19,7 @@ FROM alpine AS builder
 WORKDIR /tmp/download
 
 # Debian alternative:
-RUN	apk add --no-cache \
+RUN apk add --no-cache \
   gnupg \
   ca-certificates \
   curl \
