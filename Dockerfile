@@ -58,13 +58,22 @@ RUN mv /tmp/threema/* /app
 # __________________
 # Compression optimisation
 # __________________
-FROM node AS compressor
+FROM node:latest AS compressor
 WORKDIR /app
+
+RUN apt-get update && apt-get install -y \
+    zstd \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN chown -R node:node /app
 USER node
 
 # get app data
 COPY --chown=node:node --from=builder /app /app
+
+# compress zstd
+# "threads=0" uses one thread per CPU core
+RUN find /app -type f -exec zstd -z -f -19 --threads=0 {} +
 
 # load gzipper
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
@@ -73,11 +82,12 @@ ENV PATH=$PATH:/home/node/.npm-global/bin
 # https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md#global-npm-dependencies
 COPY --from=gzipper ${NPM_CONFIG_PREFIX} ${NPM_CONFIG_PREFIX}
 # compress GZIP and Brotli
-RUN gzipper compress --level 9 --remove-larger /app
-RUN gzipper compress --level 9 --brotli --remove-larger /app
+RUN gzipper compress --level 9 --remove-larger --exclude 'gz,br,zst' /app
+RUN gzipper compress --level 9 --brotli --remove-larger --exclude 'gz,br,zst' /app
 
 # debug output
-RUN node -v \
+RUN zstd -v \
+    && node -v \
     && ls -la /app
 
 # __________________
@@ -86,4 +96,5 @@ RUN node -v \
 FROM alpine AS final
 VOLUME /output
 COPY --chown=root:root --from=compressor /app /app
+RUN rm -rf /output/*
 RUN mv /app/* /output
