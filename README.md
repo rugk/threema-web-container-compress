@@ -19,7 +19,12 @@ After everything is done, the output is written to `/output`. Please use a webse
 You should pass the volume `/output` in order to let it save the output files somewhere:
 ```
 mkdir ./output
-podman build . -t threema-web-container-compress -v $PWD/output:/output:Z
+podman build . -t threema-web-container-compress:latest -v $PWD/output:/output:Z
 ```
 
 This example uses [`podman`](https://podman.io/), but you can replace the command with `docker` and that should work, too.
+
+It also outputs the files when running the container:
+```
+podman run -v $PWD/output:/output:Z threema-web-container-compress:latest
+```

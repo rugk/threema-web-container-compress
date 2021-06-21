@@ -97,4 +97,11 @@ FROM alpine AS final
 VOLUME /output
 COPY --chown=root:root --from=compressor /app /app
 RUN rm -rf /output/*
-RUN mv /app/* /output
+RUN cp -r /app/* /output
+
+RUN apk add --no-cache \
+  rsync
+
+# add stuff to copy data again to new volume when container is started
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+CMD ["/bin/sh", "/usr/local/bin/entrypoint.sh"]
