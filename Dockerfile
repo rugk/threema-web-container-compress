@@ -18,7 +18,6 @@ RUN npm install -g gzipper
 FROM alpine AS builder
 WORKDIR /tmp/download
 
-# Debian alternative:
 RUN apk add --no-cache \
   gnupg \
   ca-certificates \
