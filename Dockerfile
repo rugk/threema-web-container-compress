@@ -46,8 +46,8 @@ RUN gpg --import /tmp/pubkeys/*.asc
 RUN echo "E7ADD9914E260E8B35DFB50665FDE935573ACDA6:6:"|gpg --import-ownertrust
 
 # verify downloaded files
-RUN gpg --verify *.tar.gz.asc *.tar.gz
-RUN gpg --verify *.sha256.txt.asc *.sha256.txt
+RUN gpg --batch --verify *.tar.gz.asc *.tar.gz
+RUN gpg --batch --verify *.sha256.txt.asc *.sha256.txt
 RUN sha256sum --strict -c *.sha256.txt
 RUN mkdir -p /tmp/threema \
     && tar -xzf *.tar.gz --strip-components 1 -C /tmp/threema
